@@ -1,26 +1,270 @@
 @import "tailwindcss";
+@import "lenis/dist/lenis.css";
+
+@theme {
+  --color-void: #050507;
+  --color-charcoal: #111115;
+  --color-graphite: #1a1a20;
+  --color-line: #26262d;
+  --color-silver: #c0c0c0;
+  --color-bone: #f4f4f4;
+  --color-mist: #8b8c94;
+  --color-violet: #6b5ca5;
+  --color-abyss: #1b2554;
+
+  --font-display: var(--font-cormorant), "Cormorant Garamond", "Times New Roman", serif;
+  --font-sans: var(--font-inter-tight), "Inter Tight", system-ui, sans-serif;
+  --font-mono: var(--font-plex-mono), "IBM Plex Mono", ui-monospace, monospace;
+
+  --ease-luxe: cubic-bezier(0.22, 1, 0.36, 1);
+}
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  color-scheme: dark;
+  --header-h: 4.5rem;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  background: var(--color-void);
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--color-void);
+  color: var(--color-bone);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+::selection {
+  background: var(--color-silver);
+  color: var(--color-void);
+}
+
+:focus-visible {
+  outline: 1px solid var(--color-silver);
+  outline-offset: 3px;
+}
+
+@layer components {
+  /* Étiquettes techniques : capitales espacées, monospace. */
+  .label {
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+  }
+
+  .display {
+    font-family: var(--font-display);
+    font-weight: 300;
+    letter-spacing: 0.04em;
+    line-height: 0.95;
+  }
+
+  /* Argent métallique : dégradé brossé appliqué au texte. */
+  .text-metal {
+    background: linear-gradient(176deg, #f6f6f7 0%, #c9cacd 38%, #7f8187 52%, #d8d9dc 70%, #a9abb0 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  /* Logo FARØN : le mot-symbole officiel sert de masque à un dégradé argent. */
+  .logo-metal {
+    display: inline-block;
+    aspect-ratio: 2040 / 480;
+    background: linear-gradient(178deg, #fafafa 0%, #cfd0d3 40%, #85878d 55%, #e2e3e6 75%, #b4b6bb 100%);
+    -webkit-mask: url("/brand/faron-wordmark.png") center / contain no-repeat;
+    mask: url("/brand/faron-wordmark.png") center / contain no-repeat;
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    min-height: 3rem;
+    padding: 0 1.75rem;
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+    transition:
+      background-color 0.5s var(--ease-luxe),
+      color 0.5s var(--ease-luxe),
+      border-color 0.5s var(--ease-luxe),
+      opacity 0.3s;
+  }
+  .btn:disabled,
+  .btn[aria-disabled="true"] {
+    opacity: 0.38;
+    cursor: not-allowed;
+  }
+  .btn-primary {
+    background: var(--color-bone);
+    color: var(--color-void);
+    border: 1px solid var(--color-bone);
+  }
+  .btn-primary:not(:disabled):hover {
+    background: transparent;
+    color: var(--color-bone);
+  }
+  .btn-ghost {
+    border: 1px solid rgb(192 192 192 / 0.35);
+    color: var(--color-bone);
+    background: rgb(5 5 7 / 0.2);
+    backdrop-filter: blur(6px);
+  }
+  .btn-ghost:not(:disabled):hover {
+    border-color: var(--color-bone);
+    background: rgb(244 244 244 / 0.06);
+  }
+
+  .chip {
+    font-family: var(--font-mono);
+    font-size: 0.625rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    padding: 0.55rem 0.85rem;
+    border: 1px solid rgb(192 192 192 / 0.22);
+    background: rgb(5 5 7 / 0.55);
+    backdrop-filter: blur(8px);
+    color: var(--color-silver);
+    transition:
+      border-color 0.4s var(--ease-luxe),
+      color 0.4s var(--ease-luxe),
+      background-color 0.4s var(--ease-luxe);
+  }
+  .chip:hover,
+  .chip[aria-pressed="true"] {
+    border-color: var(--color-bone);
+    color: var(--color-bone);
+  }
+
+  /* Emplacement réservé : valeur commerciale ou légale encore à fournir. */
+  .placeholder {
+    display: inline;
+    padding: 0.05em 0.4em;
+    border: 1px dashed rgb(160 140 230 / 0.55);
+    color: #b7aee0;
+    font-family: var(--font-mono);
+    font-size: 0.8em;
+    letter-spacing: 0.06em;
+    -webkit-box-decoration-break: clone;
+    box-decoration-break: clone;
+  }
+
+  .link-underline {
+    background-image: linear-gradient(currentColor, currentColor);
+    background-size: 0% 1px;
+    background-position: 0 100%;
+    background-repeat: no-repeat;
+    transition: background-size 0.6s var(--ease-luxe);
+  }
+  .link-underline:hover,
+  .link-underline[aria-current="page"] {
+    background-size: 100% 1px;
+  }
+
+  .prose-legal h2 {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--color-silver);
+    margin: 3rem 0 1rem;
+  }
+  .prose-legal p,
+  .prose-legal li {
+    color: rgb(244 244 244 / 0.78);
+    line-height: 1.75;
+    font-size: 0.95rem;
+  }
+  .prose-legal p + p {
+    margin-top: 0.9rem;
+  }
+  .prose-legal ul {
+    list-style: none;
+    display: grid;
+    gap: 0.4rem;
+    margin-top: 0.75rem;
+  }
+  .prose-legal li::before {
+    content: "— ";
+    color: var(--color-mist);
+  }
+}
+
+/* Indicateur de défilement. */
+@keyframes scroll-cue {
+  0% {
+    transform: translateY(-100%);
+  }
+  60%,
+  100% {
+    transform: translateY(260%);
+  }
+}
+.scroll-cue::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  height: 40%;
+  background: linear-gradient(to bottom, transparent, var(--color-bone));
+  animation: scroll-cue 2.6s var(--ease-luxe) infinite;
+}
+
+@keyframes hero-in {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+    filter: blur(8px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+    filter: none;
+  }
+}
+.hero-in {
+  animation: hero-in 1.8s var(--ease-luxe) both;
+}
+
+@keyframes page-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+.page-in {
+  animation: page-in 0.9s var(--ease-luxe) both;
+}
+
+/* Fond étoilé statique (appareils sans WebGL). */
+.static-space {
+  background:
+    radial-gradient(1px 1px at 12% 22%, #fff9 50%, transparent),
+    radial-gradient(1px 1px at 72% 14%, #fff7 50%, transparent),
+    radial-gradient(1px 1px at 38% 68%, #fff6 50%, transparent),
+    radial-gradient(1px 1px at 88% 58%, #fff8 50%, transparent),
+    radial-gradient(1px 1px at 22% 86%, #fff5 50%, transparent),
+    radial-gradient(1px 1px at 56% 40%, #fff7 50%, transparent),
+    radial-gradient(1.5px 1.5px at 64% 78%, #dfe4ff99 50%, transparent),
+    radial-gradient(ellipse 60% 40% at 70% 30%, #2a1f4a33, transparent 70%),
+    radial-gradient(ellipse 50% 50% at 25% 70%, #16204a33, transparent 70%),
+    var(--color-void);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  ::before,
+  ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
