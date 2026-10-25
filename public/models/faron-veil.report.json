@@ -1,0 +1,77 @@
+{
+  "method": "Patron 2D (tech pack v0.5) cousu et drapé par simulation XPBD sur mannequin invisible; pose statique",
+  "pattern": {
+    "length": 65,
+    "chestHalf": 29,
+    "neckHalfWidth": 9,
+    "frontNeckDrop": 9.5,
+    "backNeckDrop": 3,
+    "shoulderX": 24,
+    "shoulderDrop": 4.4,
+    "underarmY": 22,
+    "sleeve": {
+      "length": 21,
+      "capHeight": 8.5,
+      "bicepHalf": 18.5,
+      "openingHalf": 17
+    },
+    "rib": {
+      "height": 2,
+      "stretch": 1
+    },
+    "panel": {
+      "hemWidth": 12,
+      "exponent": 0.58,
+      "forward": 6
+    },
+    "wrap": {
+      "top": {
+        "a": 0.225,
+        "b": 0.11,
+        "exponent": 0.62
+      },
+      "bottom": {
+        "a": 0.223,
+        "b": 0.119,
+        "exponent": 0.68
+      },
+      "blend": [
+        5,
+        14
+      ]
+    }
+  },
+  "simulation": [
+    "Patron : 10023 particules, 18782 triangles, 7 pièces",
+    "Couture : écart max 4.79 mm sur front:shoulderR ↔ back:shoulderR (23.2 s)",
+    "Soudure : 9540 particules (483 points cousus fusionnés)",
+    "Drapé : 61.9 s",
+    "Manches : tombé au repos, emmanchures soudées et ouvertures préservées",
+    "Pose stable : drapé gravitaire, animation de tissu désactivée"
+  ],
+  "motion": {
+    "mode": "static",
+    "morphTargets": 0
+  },
+  "model": {
+    "Ourlet porté (y, m)": -0.421,
+    "Remontée de l'ourlet sur le corps (cm)": -0.1,
+    "Haut du bord-côte (y, m)": 0.226,
+    "Encolure devant + dos (cm)": 49.1,
+    "Bord-côte (cm, 100 % de l'encolure)": 49.1
+  },
+  "files": [
+    {
+      "lod": "high",
+      "file": "models/faron-veil.glb",
+      "kb": 2303,
+      "triangles": 56274
+    },
+    {
+      "lod": "lite",
+      "file": "models/faron-veil-lite.glb",
+      "kb": 2095,
+      "triangles": 30362
+    }
+  ]
+}

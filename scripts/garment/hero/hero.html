@@ -1,0 +1,107 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8" />
+<style>html,body{margin:0;background:#050507;overflow:hidden}canvas{display:block}</style>
+<script type="importmap">{"imports":{"three":"/three/build/three.module.js","three/addons/":"/three/examples/jsm/"}}</script>
+</head>
+<body>
+<script type="module">
+import * as THREE from "three";
+import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
+import { MeshoptDecoder } from "three/addons/libs/meshopt_decoder.module.js";
+import { RoomEnvironment } from "three/addons/environments/RoomEnvironment.js";
+
+// Boucle héro : ?t=secondes (0..6), cadrage paysage ou portrait selon la taille de fenêtre.
+const q = new URLSearchParams(location.search);
+const back = q.get("view") === "back";
+const W = innerWidth, H = innerHeight;
+const LOOP = 6;
+
+const renderer = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true });
+renderer.setPixelRatio(1);
+renderer.setSize(W, H);
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 1.22;
+renderer.shadowMap.enabled = false;
+document.body.appendChild(renderer.domElement);
+
+const scene = new THREE.Scene();
+// Fond : noir profond, halo anthracite derrière la pièce, très légère teinte violette.
+const bg = document.createElement("canvas");
+bg.width = 512; bg.height = 512;
+const g = bg.getContext("2d");
+const grad = g.createRadialGradient(256, 230, 10, 256, 256, 360);
+grad.addColorStop(0, "#222129");
+grad.addColorStop(0.45, "#0e0e13");
+grad.addColorStop(1, "#040406");
+g.fillStyle = grad; g.fillRect(0, 0, 512, 512);
+// Étoiles pseudo-aléatoires déterministes : chaque rendu de la boucle est identique.
+let seed = 7;
+const rand = () => ((seed = (seed * 16807) % 2147483647) / 2147483647);
+for (let i = 0; i < 260; i++) {
+  const a = rand() * 0.5;
+  g.fillStyle = `rgba(220,225,240,${a * 0.5})`;
+  g.fillRect(rand() * 512, rand() * 512, 0.7, 0.7);
+}
+const bgTex = new THREE.CanvasTexture(bg);
+bgTex.colorSpace = THREE.SRGBColorSpace;
+scene.background = bgTex;
+
+const pmrem = new THREE.PMREMGenerator(renderer);
+scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
+scene.environmentIntensity = 0.5;
+
+const key = new THREE.DirectionalLight("#eef0f6", 3.6);
+key.position.set(1.6, 2.4, 2.6);
+key.castShadow = false;
+key.shadow.mapSize.set(2048, 2048);
+key.shadow.bias = -0.0003;
+key.shadow.normalBias = 0.01;
+Object.assign(key.shadow.camera, { left: -0.7, right: 0.7, top: 0.7, bottom: -0.7 });
+scene.add(key);
+const rimL = new THREE.DirectionalLight("#cfd4e6", 5);
+rimL.position.set(-2.6, 1.3, -2.2);
+scene.add(rimL);
+const rimR = new THREE.DirectionalLight("#9097c4", 3.5);
+rimR.position.set(2.8, 0.4, -2.0);
+scene.add(rimR);
+scene.add(new THREE.HemisphereLight("#9aa0b8", "#050507", 0.48));
+// Fill latéral doux : fait lire le panneau et ses motifs côté gauche porté.
+const fill = new THREE.DirectionalLight("#e4dccf", 2.1);
+fill.position.set(2.4, 0.1, 1.2);
+scene.add(fill);
+
+const portrait = H > W;
+const camera = new THREE.PerspectiveCamera(portrait ? 34 : 26, W / H, 0.05, 50);
+
+const gltf = await new GLTFLoader().setMeshoptDecoder(MeshoptDecoder).loadAsync("/models/faron-veil.glb");
+const model = gltf.scene;
+model.traverse((o) => { if (o.isMesh) { o.castShadow = o.receiveShadow = false; } });
+scene.add(model);
+window.renderAt = (t) => {
+  const ph = (t / LOOP) * Math.PI * 2;
+  // Le vêtement garde sa forme statique; seule la caméra offre une rotation de présentation.
+  model.position.y = Math.sin(ph) * 0.008;
+  model.rotation.y = (back ? Math.PI + 0.55 : -0.66) + Math.sin(ph) * 0.06;
+  model.rotation.z = Math.sin(ph + 1.2) * 0.008;
+  const r = portrait ? 2.75 : 2.35;
+  camera.position.set(Math.sin(ph) * 0.06, -0.02 + Math.cos(ph) * 0.02, r);
+  camera.lookAt(0, -0.075, 0);
+  renderer.render(scene, camera);
+};
+// Inspection de construction : vues fixes sans mouvement ni correction de pose.
+window.inspectGarment = ({ yaw, eye, targetY = -0.075 }) => {
+  model.position.set(0, 0, 0);
+  model.rotation.set(0, yaw, 0);
+  camera.position.set(...eye);
+  camera.lookAt(0, targetY, 0);
+  renderer.shadowMap.enabled = false;
+  key.castShadow = false;
+  renderer.render(scene, camera);
+};
+window.renderAt(Number(q.get("t") ?? 0));
+window.__ready = true;
+</script>
+</body>
+</html>
